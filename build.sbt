@@ -81,7 +81,10 @@ lazy val ryw = crossProject(JSPlatform, JVMPlatform)
       "com.zaxxer" % "HikariCP" % "5.0.0",
       "io.getquill" %% "quill-jdbc" % "3.12.0",
       "net.harawata" % "appdirs" % "1.2.1",
-      "org.postgresql" % "postgresql" % "42.2.8"
+      "org.apache.lucene" % "lucene-core" % "9.0.0",
+      "org.apache.lucene" % "lucene-queryparser" % "9.0.0",
+      "org.postgresql" % "postgresql" % "42.2.8",
+      "org.wvlet.airframe" %% "airframe-log" % "21.12.1"
     )
   )
   .jsSettings(

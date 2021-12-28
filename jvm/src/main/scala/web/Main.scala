@@ -9,12 +9,16 @@ import query.blog.QueryBlog.queryByTitle
 import search.Search
 import templates.{Blog, MainTemplate}
 
+import wvlet.log.Logger
+
 object App extends cask.MainRoutes {
+  private val logger = Logger.of[App]
+
   // No point in continuing if config cannot be loaded
   Config.testConfigLoad()
   override val port = Config.config.port
 
-  println(s"Running server on port $port ...")
+  logger.info(s"Running server on port $port ...")
 
   @cask.get("/blog/:postTitle")
   def postByTitle(postTitle: String) = {
