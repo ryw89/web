@@ -11,7 +11,10 @@ object QueryBlog {
   pgDataSource.setUser(config.dbUser)
   pgDataSource.setDatabaseName(config.dbName)
   pgDataSource.setPortNumber(config.dbPort)
-  pgDataSource.setPassword(config.dbPassword)
+
+  if (!config.dbPassword.trim.isEmpty) {
+    pgDataSource.setPassword(config.dbPassword)
+  }
 
   val dbConfig = new HikariConfig()
   dbConfig.setDataSource(pgDataSource)
