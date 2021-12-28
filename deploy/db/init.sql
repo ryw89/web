@@ -6,3 +6,8 @@ CREATE TABLE IF NOT EXISTS blog (
     contents        varchar,
 	org_hash        varchar(32)
 );
+
+CREATE TABLE IF NOT EXISTS tag (
+    id              int,
+    tag             varchar
+);
