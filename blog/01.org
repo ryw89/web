@@ -1,0 +1,10 @@
+#+TITLE: Test post
+#+DATE: [2021-12-20 Mon 13:42]
+#+OPTIONS: num:nil toc:nil
+#+OPTIONS: html-postamble:nil
+* A heading
+Some text
+
+#+BEGIN_SRC python
+print('Hi'!)
+#+END_SRC

@@ -1,0 +1,53 @@
+- hosts: ryw
+
+  vars:
+    db_user: ryanw
+    db_name: ryw_web
+
+  become: yes
+
+  pre_tasks:
+    - name: "Install packages"
+      apt: "name={{ item }} state=present"
+      with_items:
+        - libpq-dev
+        - postgresql
+
+    - name: "Install Python packages"
+      pip: "name={{ item }}  state=present"
+      with_items:
+        - psycopg2
+
+  tasks:
+    - name: "Create app database"
+      postgresql_db:
+        state: present
+        name: "{{ db_name }}"
+      become: yes
+      become_user: postgres
+
+    - name: "Create db user"
+      postgresql_user:
+        state: present
+        name: "{{ db_user }}"
+      become: yes
+      become_user: postgres
+
+    - name: "Grant db user access to app db"
+      postgresql_privs:
+        type: database
+        database: "{{ db_name }}"
+        roles: "{{ db_user }}"
+        grant_option: no
+        privs: all
+      become: yes
+      become_user: postgres
+
+    - name: "Load SQL script into a variable"
+      set_fact:
+        init_sql: "{{ lookup('file', 'init.sql') }}"
+
+    - name: "Execute script from variable"
+      command: "psql {{ db_name }} -c '{{ init_sql }}'"
+      become_user: "{{ db_user }}"
+      register: sql_response_variable

@@ -1,0 +1,25 @@
+# Scala
+.bloop
+.bsp
+project/metals.sbt
+.metals
+.tasty
+
+# sbt
+project/project/
+project/target/
+target/
+.log
+
+# Built & downloaded assets
+static/assets
+
+# Built html
+blog/*.html
+
+# Backups
+*-bak*
+*.bak
+
+# Resources
+jvm/src/main/resources/*bundle.js
