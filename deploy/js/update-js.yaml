@@ -1,0 +1,28 @@
+- hosts: localhost
+
+  vars:
+    project_root: ../../
+    sbt_js_bundle_folder: js/target/scala-2.13/scalajs-bundler/main/
+
+  tasks:
+    - name: "Build JS webpack bundle"
+      command: sbt 'rywJS/fullOptJS::webpack'
+      args:
+        chdir: "{{ project_root }}"
+
+- hosts: ryw
+
+  vars:
+    project_root: ../../
+    sbt_js_bundle_folder: js/target/scala-2.13/scalajs-bundler/main/
+    js_bundle_dest: /var/www/html/static/ryw-web-opt-bundle.js
+
+  become: yes
+
+  tasks:
+    - name: "Copy JS bundle to remote"
+      copy:
+        src: "{{ project_root }}/{{ sbt_js_bundle_folder }}/ryw-web-opt-bundle.js"
+        dest: "{{ js_bundle_dest }}"
+        owner: www-data
+        group: www-data
