@@ -21,6 +21,7 @@ object Db {
 
   val ctx = new PostgresJdbcContext(LowerCase, new HikariDataSource(dbConfig))
 
+  // Table schemas
   case class Blog(
       id: Int,
       tstamp: Int,
@@ -28,6 +29,11 @@ object Db {
       author: String,
       contents: String,
       org_hash: String
+  )
+
+  case class Tag(
+      blog_id: Int,
+      tag: String
   )
 
 }
