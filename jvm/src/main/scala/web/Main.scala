@@ -2,14 +2,13 @@ package com.ryanwhittingham.web
 
 import com.thedeanda.lorem.LoremIpsum
 import scalatags.Text.all._
+import wvlet.log.Logger
 
 import config.Config
 import errors.ServeError
 import query.blog.QueryBlog.queryByTitle
 import search.Search
 import templates.{Blog, MainTemplate}
-
-import wvlet.log.Logger
 
 object App extends cask.MainRoutes {
   private val logger = Logger.of[App]

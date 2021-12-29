@@ -1,8 +1,7 @@
 package com.ryanwhittingham.web.db
 
 import com.ryanwhittingham.web.config.Config.config
-import com.zaxxer.hikari.HikariConfig
-import com.zaxxer.hikari.HikariDataSource
+import com.zaxxer.hikari.{HikariConfig, HikariDataSource}
 import io.getquill._
 
 object Db {
