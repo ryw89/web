@@ -4,8 +4,11 @@ import com.thedeanda.lorem.LoremIpsum
 import scalatags.Text.all._
 import wvlet.log.Logger
 
+import scala.util.{Failure, Success}
+
 import config.Config
 import errors.ServeError
+import orgtohtml.OrgToHtmlToDb
 import query.blog.QueryBlog.queryByTitle
 import search.Search
 import templates.{Blog, MainTemplate}
@@ -23,6 +26,18 @@ object App extends cask.MainRoutes {
   @cask.get("/api/test")
   def serve() = {
     "Request responded to."
+  }
+
+  @cask.get("/api/org2html/:orgPath")
+  def orgToHtml(orgPath: String) = {
+    OrgToHtmlToDb.orgToHtmlToDb(orgPath) match {
+      case Success(_) =>
+        cask.Response("Successfully added .org file to database.\n", 200)
+      case Failure(f) => {
+        logger.error(f)
+        cask.Response("An application error occurred.\n", 500)
+      }
+    }
   }
 
   @cask.get("/blog/:postTitle")
@@ -58,7 +73,7 @@ object App extends cask.MainRoutes {
     if (!s.queryIsValid) {
       cask.Redirect("/error")
     } else {
-      cask.Response("Some content", 200)
+      cask.Response("Filler content", 200)
     }
   }
 

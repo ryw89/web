@@ -16,7 +16,9 @@ object Config {
       dbPassword: String,
       dbName: String,
       dbType: String,
-      port: Int
+      port: Int,
+      blogRoot: String,
+      org2htmlDir: String
   )
 
   private implicit val SchemaRW = upickle.default.macroRW[Schema]
