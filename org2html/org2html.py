@@ -16,20 +16,25 @@ class OrgToHtml():
     def html_file(self):
         return self.infile.replace('.org', '.html')
 
-    def build_script(self):
+    def build_script(self, lib_path='/root/.emacs.d/init.el'):
         tmp = tempfile.mkstemp()[1]
+
+        # Add Elisp libs to emacs script
+        with open(lib_path) as f:
+            init = f.read()
+
         elisp = f'''(find-file "{self.infile}")
                  (org-html-export-to-html)'''
 
         with open(tmp, 'w') as f:
-            f.write(elisp)
+            f.write(f'{init}\n{elisp}')
 
         print(f'Wrote script to {tmp}.')
 
         self.script_path = tmp
 
     def execute_script(self):
-        cmd = ['emacs', '--script', self.script_path]
+        cmd = ['emacs', '-q', '--script', self.script_path]
         ps = subprocess.Popen(cmd,
                               shell=False,
                               stdout=subprocess.PIPE,
