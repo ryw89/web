@@ -19,6 +19,12 @@ object App extends cask.MainRoutes {
 
   logger.info(s"Running server on port $port ...")
 
+  /** Test route for API. */
+  @cask.get("/api/test")
+  def serve() = {
+    "Request responded to."
+  }
+
   @cask.get("/blog/:postTitle")
   def postByTitle(postTitle: String) = {
     val postContents = queryByTitle(postTitle)
