@@ -25,7 +25,7 @@ object Db {
       id: Int,
       tstamp: Int,
       title: String,
-      author: String,
+      author: Option[String],
       contents: String,
       org_hash: String
   )
