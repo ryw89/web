@@ -8,6 +8,6 @@ CREATE TABLE IF NOT EXISTS blog (
 );
 
 CREATE TABLE IF NOT EXISTS tag (
-    id              int,
+	blog_id         int,
     tag             varchar
 );
