@@ -162,7 +162,7 @@ object Blog {
   def blog(title: String, html: String) = {
     Tags.article(
       `class` := "blog-post",
-      h2(`class` := "pb-4 mb-4 border-bottom blog-post-title", title),
+      h1(`class` := "pb-4 mb-4 border-bottom blog-post-title", title),
       raw(html)
     )
   }
