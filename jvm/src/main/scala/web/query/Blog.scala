@@ -23,9 +23,12 @@ object QueryBlog {
 
     // Note that element 1 of tuple is id, and element 2 is title.
     // This filter and map operation finds the blog IDs that match the
-    // title
+    // title. Additionally, we replace dashes with spaces to allow
+    // dashes in request.
     val matchedBlogIds =
-      blogIdsAndTitles.filter(_._2.toLowerCase == title.toLowerCase).map(_._1)
+      blogIdsAndTitles
+        .filter(_._2.toLowerCase == title.toLowerCase.replace("-", " "))
+        .map(_._1)
 
     // Nothing found in this case, so return a None to the caller --
     // this will be presented as a 404 upstream
