@@ -8,7 +8,7 @@ import scala.util.{Failure, Success}
 
 import config.Config
 import orgtohtml.OrgToHtmlToDb
-import query.blog.QueryBlog.queryByTitle
+import query.blog.QueryBlog.{mostRecentBlog, queryByTitle}
 import search.Search
 import templates.{Blog, ErrTemplates, MainTemplate}
 
@@ -37,6 +37,19 @@ object App extends cask.MainRoutes {
         cask.Response("An application error occurred.\n", 500)
       }
     }
+  }
+
+  @cask.get("/blog")
+  def getMostRecentBlog() = {
+    mostRecentBlog match {
+      case Some(b) =>
+        cask.Response(
+          MainTemplate.fill(Blog.blog(b.title, b.contents)),
+          200
+        )
+      case None => cask.Response(ErrTemplates.notFound, 404)
+    }
+
   }
 
   @cask.get("/blog/:postTitle")

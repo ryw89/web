@@ -5,6 +5,15 @@ import wvlet.log.Logger
 object QueryBlog {
   import com.ryanwhittingham.web.db.Db._
   private val logger = Logger.of[App]
+  def mostRecentBlog(): Option[Blog] = {
+    logger.info("Fetching most recent blog post.")
+    import ctx._
+    // Fetch title of highest id
+    val titleWithMaxTimestamp =
+      ctx.run(query[Blog].map(b => (b.tstamp, b.title))).maxBy(_._1)._2
+    queryByTitle(titleWithMaxTimestamp)
+  }
+
   def queryByTitle(title: String): Option[Blog] = {
     logger.info(s"Searching for blog post with title '${title}'.")
     import ctx._
