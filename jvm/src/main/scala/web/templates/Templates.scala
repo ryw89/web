@@ -85,6 +85,12 @@ object MainTemplate {
   }
 }
 
+object ErrTemplates {
+  def notFound() = {
+    MainTemplate.fill("Nothing found here!")
+  }
+}
+
 object Navbar {
   // Tuples are link, then text
   private val navbarContents = Seq(

@@ -7,11 +7,10 @@ import wvlet.log.Logger
 import scala.util.{Failure, Success}
 
 import config.Config
-import errors.ServeError
 import orgtohtml.OrgToHtmlToDb
 import query.blog.QueryBlog.queryByTitle
 import search.Search
-import templates.{Blog, MainTemplate}
+import templates.{Blog, ErrTemplates, MainTemplate}
 
 object App extends cask.MainRoutes {
   private val logger = Logger.of[App]
@@ -42,11 +41,18 @@ object App extends cask.MainRoutes {
 
   @cask.get("/blog/:postTitle")
   def postByTitle(postTitle: String) = {
-    val postContents = queryByTitle(postTitle)
-    postContents match {
-      case Some(p) => cask.Response(p.contents)
-      case None    => ServeError.serve(404)
+    import tags.Tags._
+    queryByTitle(postTitle) match {
+      case Some(b) =>
+        cask.Response(
+          MainTemplate.fill(
+            article(`class` := "blog-post", Blog.blog(b.title, b.contents))
+          ),
+          200
+        )
+      case None => cask.Response(ErrTemplates.notFound, 404)
     }
+
   }
 
   /** Example page for examining UI. */
