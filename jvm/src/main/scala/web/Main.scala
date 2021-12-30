@@ -90,10 +90,7 @@ object App extends cask.MainRoutes {
 
   @cask.get("/notfound")
   def notFound() = {
-    MainTemplate.fill(
-      h2("Nothing found here!")
-    )
-
+    cask.Response(ErrTemplates.notFound, 404)
   }
 
   @cask.get("/error")
