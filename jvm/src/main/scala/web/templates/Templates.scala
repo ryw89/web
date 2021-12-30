@@ -21,6 +21,7 @@ object Head {
     script(
       src := "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/highlight.min.js"
     ),
+    script("hljs.highlightAll();"),
     // Bootstrap CSS, including dark theme
     link(
       rel := "stylesheet",
