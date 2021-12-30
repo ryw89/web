@@ -3,12 +3,25 @@
   vars:
     project_root: ../../
     sbt_js_bundle_folder: js/target/scala-2.13/scalajs-bundler/main/
+    scala_resources_folder: jvm/src/main/resources/
+    nginx_srv_static_folder: /srv/ryw-web/static/
 
   tasks:
     - name: "Build JS webpack bundle"
       command: sbt 'rywJS/fullOptJS::webpack'
       args:
         chdir: "{{ project_root }}"
+    - name: "Copy JS to Scala sources folder"
+      copy:
+        src: "{{ project_root }}/{{ sbt_js_bundle_folder }}/ryw-web-opt-bundle.js"
+        dest: "{{ project_root }}/{{ scala_resources_folder}}/ryw-web-opt-bundle.js"
+    - name: "Copy JS to Nginx static assets folder"
+      become: yes
+      copy:
+        src: "{{ project_root }}/{{ sbt_js_bundle_folder }}/ryw-web-opt-bundle.js"
+        dest: "{{ nginx_srv_static_folder }}/ryw-web-opt-bundle.js"
+        owner: nginx
+        group: nginx
 
 - hosts: ryw
 
