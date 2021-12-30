@@ -1,5 +1,8 @@
 package com.ryanwhittingham.web.common
 
+import org.joda.time.DateTime
+import wvlet.log.Logger
+
 import java.math.BigInteger
 import java.security.MessageDigest
 import scala.util.{Failure, Success, Try}
@@ -19,6 +22,15 @@ object Unwrap {
     }
 
     unwrappedOption
+  }
+}
+
+/** Convert Unix timestamp in seconds to a datetime string. */
+object UnixTimeToDate {
+  private val logger = Logger.of[App]
+  def unixTimeToDate(t: Int, fmt: String) = {
+    logger.info(s"Converting Unix time ${t} to string...")
+    new DateTime(t.toLong * 1000).toDateTime.toString(fmt)
   }
 }
 

@@ -80,6 +80,7 @@ lazy val ryw = crossProject(JSPlatform, JVMPlatform)
       "com.lihaoyi" %% "os-lib" % "0.8.0",
       "com.zaxxer" % "HikariCP" % "5.0.0",
       "io.getquill" %% "quill-jdbc" % "3.12.0",
+      "joda-time" % "joda-time" % "2.10.13",
       "net.harawata" % "appdirs" % "1.2.1",
       "org.apache.lucene" % "lucene-core" % "9.0.0",
       "org.apache.lucene" % "lucene-queryparser" % "9.0.0",

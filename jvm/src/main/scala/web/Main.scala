@@ -9,8 +9,8 @@ import scala.util.{Failure, Success}
 import config.Config
 import orgtohtml.OrgToHtmlToDb
 import query.blog.QueryBlog.{mostRecentBlog, queryByTitle}
-import search.Search
-import templates.{Blog, ErrTemplates, MainTemplate}
+import search.{Search, UpdateIndex}
+import templates.{Blog, ErrTemplates, MainTemplate, SearchResults}
 
 object App extends cask.MainRoutes {
   private val logger = Logger.of[App]
@@ -32,6 +32,19 @@ object App extends cask.MainRoutes {
     OrgToHtmlToDb.orgToHtmlToDb(orgPath) match {
       case Success(_) =>
         cask.Response("Successfully added .org file to database.\n", 200)
+      case Failure(f) => {
+        logger.error(f)
+        cask.Response("An application error occurred.\n", 500)
+      }
+    }
+  }
+
+  @cask.get("/api/index-post/:postId")
+  def indexPost(postId: Int) = {
+    val u = new UpdateIndex(Some(Seq(postId)))
+    u.addBlogsToIndex() match {
+      case Success(_) =>
+        cask.Response("Successfully indexed blog post.\n", 200)
       case Failure(f) => {
         logger.error(f)
         cask.Response("An application error occurred.\n", 500)
@@ -82,9 +95,13 @@ object App extends cask.MainRoutes {
     val s = new Search(query)
 
     if (!s.queryIsValid) {
-      cask.Redirect("/error")
+      cask.Response(ErrTemplates.appError, 500)
     } else {
-      cask.Response("Filler content", 200)
+      s.search() match {
+        case Some(s) => cask.Response(s, 200)
+        case None    => cask.Response(SearchResults.noSearchResults, 200)
+      }
+
     }
   }
 

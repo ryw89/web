@@ -89,6 +89,10 @@ object ErrTemplates {
   def notFound() = {
     MainTemplate.fill("Nothing found here!")
   }
+
+  def appError() = {
+    MainTemplate.fill("An application error occurred.")
+  }
 }
 
 object Navbar {
@@ -188,4 +192,39 @@ object Search {
     )
   )
 
+}
+
+object SearchResults {
+  def searchResults(blogTitles: Seq[String], blogDates: Seq[String]) = {
+    val blogLinks =
+      blogTitles.map(_.toLowerCase.replace(" ", "-")).map(s => "/blog/" + s)
+
+    val blogHref =
+      for {
+        (title, link, date) <-
+          blogTitles.lazyZip(blogLinks).lazyZip(blogDates).toList
+      } yield {
+        li(
+          h2(a(href := link, title)),
+          Tags.time(`class` := "pb-2", date)
+        )
+      }
+
+    // Build list of blog titles & links
+    MainTemplate.fill(
+      Seq(
+        h1(`class` := "pb-4 mb-4 border-bottom", "Search results"),
+        ol(`class` := "list-unstyled", blogHref)
+      )
+    )
+  }
+
+  def noSearchResults() = {
+    MainTemplate.fill(
+      Seq(
+        h1(`class` := "pb-4 mb-4 border-bottom", "Search results"),
+        h2("No search results found.")
+      )
+    )
+  }
 }
