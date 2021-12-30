@@ -41,13 +41,10 @@ object App extends cask.MainRoutes {
 
   @cask.get("/blog/:postTitle")
   def postByTitle(postTitle: String) = {
-    import tags.Tags._
     queryByTitle(postTitle) match {
       case Some(b) =>
         cask.Response(
-          MainTemplate.fill(
-            article(`class` := "blog-post", Blog.blog(b.title, b.contents))
-          ),
+          MainTemplate.fill(Blog.blog(b.title, b.contents)),
           200
         )
       case None => cask.Response(ErrTemplates.notFound, 404)
@@ -58,16 +55,11 @@ object App extends cask.MainRoutes {
   /** Example page for examining UI. */
   @cask.get("/example")
   def example() = {
-    import tags.Tags._
-
     val lorem = LoremIpsum.getInstance()
     val bodyContents = lorem.getParagraphs(50, 70)
 
     MainTemplate.fill(
-      article(
-        `class` := "blog-post",
-        Blog.blog("A cool title", bodyContents)
-      )
+      Blog.blog("A cool title", bodyContents)
     )
 
   }
