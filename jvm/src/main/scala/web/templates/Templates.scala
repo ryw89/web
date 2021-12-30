@@ -56,7 +56,7 @@ object Body {
   )
 
   // This refers to the library in this project written in ScalaJS
-  val ownJS = script(src := "static/ryw-web-opt-bundle.js")
+  val ownJS = script(src := "/static/ryw-web-opt-bundle.js")
 }
 
 object MainTemplate {
@@ -88,10 +88,10 @@ object MainTemplate {
 object Navbar {
   // Tuples are link, then text
   private val navbarContents = Seq(
-    ("blog", "Home"),
-    ("about", "About"),
-    ("cv", "CV"),
-    ("contact", "Contact")
+    ("/blog", "Home"),
+    ("/about", "About"),
+    ("/cv", "CV"),
+    ("/contact", "Contact")
   )
   private val aClass = "nav-item nav-link text-center"
   private val navBarTags =
@@ -122,8 +122,7 @@ object Sidebar {
         li(
           a( // Note that this class is used to correct the links by the
             // makeHrefRelativeToLocation JS function
-            `class` := "hrefRelativeToOrigin",
-            href := s"blog/by-month/${start.minusMonths(x).format(hrefFormat)}",
+            href := s"/blog/by-month/${start.minusMonths(x).format(hrefFormat)}",
             start.minusMonths(x).format(outFormat)
           )
         )
