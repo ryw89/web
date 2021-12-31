@@ -82,6 +82,7 @@ object MainTemplate {
             Sidebar.sidebar
           )
         ),
+        Modal.searchTooLong,
         jsBodyEnd
       )
     )
@@ -172,6 +173,26 @@ object Blog {
       h1(`class` := "pb-4 mb-4 border-bottom blog-post-title", title),
       raw(html)
     )
+  }
+}
+
+object Modal {
+  def searchTooLong() = {
+    div(
+      `class` := "modal fade",
+      id := "search-too-long-modal",
+      tabindex := "-1",
+      role := "dialog",
+      div(
+        `class` := "modal-dialog modal-dialog-centered",
+        role := "document",
+        div(
+          `class` := "modal-content",
+          div(`class` := "modal-body", "Search query is too long.")
+        )
+      )
+    )
+
   }
 }
 

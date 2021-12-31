@@ -20,7 +20,7 @@ object Main {
 
     // Validate search contents
     if (formValue.length > 32) {
-      window.alert("Query is too long.")
+      js.Dynamic.global.jQuery("#search-too-long-modal").modal()
       return ()
     }
 
