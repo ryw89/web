@@ -1,6 +1,7 @@
 package com.ryanwhittingham.web
 
 import org.scalajs.dom
+import org.scalajs.dom.html.TextArea
 
 import scalajs.js
 import scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
@@ -14,7 +15,8 @@ object Main {
   def searchHandler(formInputId: String): Unit = {
     val document = dom.document
     val window = dom.window
-    val formValue = document.getElementById(formInputId).getAttribute("value")
+    val formValue =
+      document.getElementById(formInputId).asInstanceOf[TextArea].value
 
     // Validate search contents
     if (formValue.length > 32) {
