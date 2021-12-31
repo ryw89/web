@@ -217,7 +217,8 @@ object SearchResults {
     MainTemplate.fill(
       Seq(
         h1(`class` := "pb-4 mb-4 border-bottom", "Search results"),
-        ol(`class` := "list-unstyled", blogHref)
+        ol(`class` := "list-unstyled", blogHref),
+        script("document.title = 'Search results'")
       )
     )
   }
@@ -226,7 +227,8 @@ object SearchResults {
     MainTemplate.fill(
       Seq(
         h1(`class` := "pb-4 mb-4 border-bottom", "Search results"),
-        h2("No search results found.")
+        h2("No search results found."),
+        script("document.title = 'Search results'")
       )
     )
   }
