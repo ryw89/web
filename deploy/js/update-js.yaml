@@ -24,6 +24,7 @@
         group: nginx
       loop:
         - "{{ project_root }}/{{ sbt_js_bundle_folder }}/ryw-web-opt-bundle.js"
+        - "{{ project_root }}/{{ sbt_js_bundle_folder }}/ryw-web-opt-bundle.js.map"
         - "{{ project_root }}/{{ scala_resources_folder }}/ryw.js"
 
 - hosts: ryw
@@ -45,4 +46,5 @@
         group: www-data
       loop:
         - "{{ project_root }}/{{ sbt_js_bundle_folder }}/ryw-web-opt-bundle.js"
+        - "{{ project_root }}/{{ sbt_js_bundle_folder }}/ryw-web-opt-bundle.js.map"
         - "{{ project_root }}/{{ scala_resources_folder }}/ryw.js"
