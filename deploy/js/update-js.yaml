@@ -11,31 +11,38 @@
       command: sbt 'rywJS/fullOptJS::webpack'
       args:
         chdir: "{{ project_root }}"
-    - name: "Copy JS to Scala sources folder"
+    - name: "Copy webpack JS to Scala sources folder"
       copy:
         src: "{{ project_root }}/{{ sbt_js_bundle_folder }}/ryw-web-opt-bundle.js"
         dest: "{{ project_root }}/{{ scala_resources_folder}}/ryw-web-opt-bundle.js"
-    - name: "Copy JS to Nginx static assets folder"
+    - name: "Copy JS to local Nginx static assets folder"
       become: yes
       copy:
-        src: "{{ project_root }}/{{ sbt_js_bundle_folder }}/ryw-web-opt-bundle.js"
-        dest: "{{ nginx_srv_static_folder }}/ryw-web-opt-bundle.js"
+        src: "{{ item }}"
+        dest: "{{ nginx_srv_static_folder }}"
         owner: nginx
         group: nginx
+      loop:
+        - "{{ project_root }}/{{ sbt_js_bundle_folder }}/ryw-web-opt-bundle.js"
+        - "{{ project_root }}/{{ scala_resources_folder }}/ryw.js"
 
 - hosts: ryw
 
   vars:
     project_root: ../../
     sbt_js_bundle_folder: js/target/scala-2.13/scalajs-bundler/main/
-    js_bundle_dest: /var/www/html/static/ryw-web-opt-bundle.js
+    scala_resources_folder: jvm/src/main/resources/
+    nginx_srv_static_folder: /var/www/html/static/
 
   become: yes
 
   tasks:
-    - name: "Copy JS bundle to remote"
+    - name: "Copy JS to remote Nginx static assets folder"
       copy:
-        src: "{{ project_root }}/{{ sbt_js_bundle_folder }}/ryw-web-opt-bundle.js"
-        dest: "{{ js_bundle_dest }}"
+        src: "{{ item }}"
+        dest: "{{ nginx_srv_static_folder }}"
         owner: www-data
         group: www-data
+      loop:
+        - "{{ project_root }}/{{ sbt_js_bundle_folder }}/ryw-web-opt-bundle.js"
+        - "{{ project_root }}/{{ scala_resources_folder }}/ryw.js"
