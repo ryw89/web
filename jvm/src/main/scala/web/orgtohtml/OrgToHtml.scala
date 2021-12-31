@@ -8,7 +8,7 @@ import wvlet.log.LogSupport
 import java.lang.UnsupportedOperationException
 import java.text.SimpleDateFormat
 import scala.io.Source
-import scala.util.Try
+import scala.util.{Failure, Success, Try}
 
 object OrgToHtmlToDb extends LogSupport {
 
@@ -17,7 +17,10 @@ object OrgToHtmlToDb extends LogSupport {
   def orgToHtmlToDb(orgPath: String): Try[Unit] =
     Try {
       val o = new OrgToHtml(orgPath)
-      o.orgToHtml()
+      o.orgToHtml() match {
+        case Failure(f) => throw f
+        case Success(_) => {}
+      }
       o.hashOrgFile()
       info(s"Org file hash: ${o.orgHash}.\n")
       o.extractOrgFields()
