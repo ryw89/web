@@ -56,13 +56,16 @@ object Body {
   )
 
   // This refers to the library in this project written in ScalaJS
-  val ownJS = script(src := "/static/ryw-web-opt-bundle.js")
+  val ownJS = Seq(
+    script(src := "/static/ryw-web-opt-bundle.js"),
+    script(src := "/static/ryw.js")
+  )
 }
 
 object MainTemplate {
   def fill(contents: scalatags.Text.Modifier) = {
     val headContents = Head.basicHead
-    val jsBodyEnd = Body.bootstrapJS ++ Seq(Body.ownJS)
+    val jsBodyEnd = Body.bootstrapJS ++ Body.ownJS
 
     html(
       headContents,
@@ -187,7 +190,7 @@ object Search {
         id := "blog-search-button",
         `class` := "btn btn-outline-secondary",
         `type` := "button",
-        Tags.i(`class` := "bi bi-search")
+        Tags.i(`class` := "bi bi-search blog")
       )
     )
   )
