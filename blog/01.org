@@ -3,6 +3,7 @@
 #+OPTIONS: num:nil toc:nil
 #+OPTIONS: html-postamble:nil
 #+OPTIONS: title:nil
+#+TAGS: test word
 * A heading
 Some text
 
