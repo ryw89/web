@@ -167,11 +167,16 @@ object Sidebar {
   )
 }
 
+object Badge {
+  def makeBadges(tags: Seq[String]) = {
+    val badgeClass = "badge badge-light mx-1"
+    tags.map(span(`class` := badgeClass, _))
+  }
+}
+
 object Blog {
   def blog(title: String, html: String, tags: Seq[String] = Seq()) = {
-    val badgeClass = "badge badge-light mx-1"
-
-    val tagsHtml = tags.map(span(`class` := badgeClass, _))
+    val tagsHtml = Badge.makeBadges(tags)
 
     Tags.article(
       `class` := "blog-post",
