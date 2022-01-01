@@ -54,21 +54,7 @@ object App extends cask.MainRoutes {
 
   @cask.get("/blog")
   def getMostRecentBlog() = {
-    mostRecentBlog match {
-      case Some(blogAndTags) =>
-        cask.Response(
-          MainTemplate.fill(
-            Blog.blog(
-              blogAndTags._1.title,
-              blogAndTags._1.contents,
-              blogAndTags._2
-            )
-          ),
-          200
-        )
-      case None => cask.Response(ErrTemplates.notFound, 404)
-    }
-
+    postByTitle(mostRecentBlog)
   }
 
   @cask.get("/blog/:postTitle")
