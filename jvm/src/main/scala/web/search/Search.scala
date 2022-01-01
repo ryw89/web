@@ -220,12 +220,10 @@ class Search(val query: String) extends LogSupport {
     }
 
     val blogSearchResults = GetBlogSearchResults.get(blogIdsAndScores)
-    val blogTitles = blogSearchResults.map(_.title)
-    val blogDates = blogSearchResults.map(_.date)
 
     // Make HTML tags
     val out: scalatags.Text.TypedTag[String] =
-      searchResults(blogTitles, blogDates)
+      searchResults(blogSearchResults)
     Some(out)
   }
 

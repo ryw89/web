@@ -1,5 +1,6 @@
 package com.ryanwhittingham.web.templates
 
+import com.ryanwhittingham.web.search.BlogSearchResult
 import com.ryanwhittingham.web.tags.Tags
 import scalatags.Text.all._
 
@@ -227,7 +228,9 @@ object Search {
 }
 
 object SearchResults {
-  def searchResults(blogTitles: Seq[String], blogDates: Seq[String]) = {
+  def searchResults(blogSearchResults: List[BlogSearchResult]) = {
+    val blogTitles = blogSearchResults.map(_.title)
+    val blogDates = blogSearchResults.map(_.date)
     val blogLinks =
       blogTitles.map(_.toLowerCase.replace(" ", "-")).map(s => "/blog/" + s)
 
