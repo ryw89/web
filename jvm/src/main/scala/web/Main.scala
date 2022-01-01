@@ -6,6 +6,7 @@ import wvlet.log.Logger
 
 import scala.util.{Failure, Success}
 
+import common.UnixTimeToDate.unixTimeToDate
 import config.Config
 import orgtohtml.OrgToHtmlToDb
 import query.blog.QueryBlog.{mostRecentBlog, queryByTitle}
@@ -66,6 +67,7 @@ object App extends cask.MainRoutes {
             Blog.blog(
               blogAndTags._1.title,
               blogAndTags._1.contents,
+              unixTimeToDate(blogAndTags._1.tstamp, "MMM d, y"),
               blogAndTags._2
             )
           ),
@@ -83,7 +85,7 @@ object App extends cask.MainRoutes {
     val bodyContents = lorem.getParagraphs(50, 70)
 
     MainTemplate.fill(
-      Blog.blog("A cool title", bodyContents)
+      Blog.blog("A cool title", "Jan 01, 1900", bodyContents)
     )
 
   }

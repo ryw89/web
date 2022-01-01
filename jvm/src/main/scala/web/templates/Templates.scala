@@ -175,7 +175,12 @@ object Badge {
 }
 
 object Blog {
-  def blog(title: String, html: String, tags: Seq[String] = Seq()) = {
+  def blog(
+      title: String,
+      html: String,
+      date: String,
+      tags: Seq[String] = Seq()
+  ) = {
     val tagsHtml = Badge.makeBadges(tags)
 
     Tags.article(
@@ -183,6 +188,8 @@ object Blog {
       div(
         `class` := "border-bottom pb-2 mb-3",
         h1(`class` := "blog-post-title", title),
+        Tags.time(`class` := "pb-2", date),
+        " | ",
         tagsHtml
       ),
       raw(html)

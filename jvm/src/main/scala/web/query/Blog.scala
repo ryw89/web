@@ -16,8 +16,8 @@ object QueryBlog {
     logger.info(s"Searching for blog post with title '${title}'.")
     import ctx._
     // First, fetch all IDs and titles
-    val blogIdsAndTitles: Seq[(Int, String)] =
-      ctx.run(query[Blog].map(b => (b.id, b.title)))
+    val blogIdsAndTitles: Seq[(Int, String, Int)] =
+      ctx.run(query[Blog].map(b => (b.id, b.title, b.tstamp)))
 
     // Note that element 1 of tuple is id, and element 2 is title.
     // This filter and map operation finds the blog IDs that match the
