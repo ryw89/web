@@ -167,10 +167,18 @@ object Sidebar {
 }
 
 object Blog {
-  def blog(title: String, html: String) = {
+  def blog(title: String, html: String, tags: Seq[String] = Seq()) = {
+    val badgeClass = "badge badge-light mx-1"
+
+    val tagsHtml = tags.map(span(`class` := badgeClass, _))
+
     Tags.article(
       `class` := "blog-post",
-      h1(`class` := "pb-4 mb-4 border-bottom blog-post-title", title),
+      div(
+        `class` := "border-bottom pb-2 mb-3",
+        h1(`class` := "blog-post-title", title),
+        tagsHtml
+      ),
       raw(html)
     )
   }

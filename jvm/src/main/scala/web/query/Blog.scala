@@ -5,7 +5,7 @@ import wvlet.log.Logger
 object QueryBlog {
   import com.ryanwhittingham.web.db.Db._
   private val logger = Logger.of[App]
-  def mostRecentBlog(): Option[Blog] = {
+  def mostRecentBlog(): Option[(Blog, Seq[String])] = {
     logger.info("Fetching most recent blog post.")
     import ctx._
     // Fetch title of highest id
@@ -14,7 +14,7 @@ object QueryBlog {
     queryByTitle(titleWithMaxTimestamp)
   }
 
-  def queryByTitle(title: String): Option[Blog] = {
+  def queryByTitle(title: String): Option[(Blog, Seq[String])] = {
     logger.info(s"Searching for blog post with title '${title}'.")
     import ctx._
     // First, fetch all IDs and titles
@@ -41,6 +41,9 @@ object QueryBlog {
     val blog = ctx.run(query[Blog].filter(_.id == lift(matchedId)))(0)
     logger.info(s"Found matched blog post with id ${blog.id}.")
 
-    Some(blog)
+    val tag: Seq[String] =
+      ctx.run(query[Tag].filter(_.blog_id == lift(blog.id))).map(_.tag)
+
+    Some(blog, tag)
   }
 }
