@@ -61,7 +61,7 @@ object OrgToHtmlToDb extends LogSupport {
       )
     }
     ctx.run(query[Blog].insert(lift(blog)))
-    info("Inserted new blog post into database.")
+    info(s"Inserted new blog post with id ${blog.id} into database.")
   }
 
   /** Insert a row to tag table. */
