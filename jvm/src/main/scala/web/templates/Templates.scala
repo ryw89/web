@@ -236,17 +236,24 @@ object SearchResults {
   def searchResults(blogSearchResults: List[BlogSearchResult]) = {
     val blogTitles = blogSearchResults.map(_.title)
     val blogDates = blogSearchResults.map(_.date)
+    val blogTagHtmls = blogSearchResults.map(_.tags).map(Badge.makeBadges(_))
     val blogLinks =
       blogTitles.map(_.toLowerCase.replace(" ", "-")).map(s => "/blog/" + s)
 
     val blogHref =
       for {
-        (title, link, date) <-
-          blogTitles.lazyZip(blogLinks).lazyZip(blogDates).toList
+        (title, link, date, tags) <-
+          blogTitles
+            .lazyZip(blogLinks)
+            .lazyZip(blogDates)
+            .lazyZip(blogTagHtmls)
+            .toList
       } yield {
         li(
-          h2(a(href := link, title)),
-          Tags.time(`class` := "pb-2", date)
+          h2(`class` := "display-inline", a(href := link, title)),
+          Tags.time(`class` := "pb-2", date),
+          " | ",
+          tags
         )
       }
 
