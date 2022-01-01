@@ -37,6 +37,17 @@ object OrgToHtmlToDb extends LogSupport {
       val blog = Blog(id, tstamp, title, author, contents, orgHash)
       insertBlogPostToDb(blog)
 
+      // Next insert tag rows, if any
+      o.tags match {
+        case Some(tags) => {
+          for (t <- tags) {
+            val tag = Tag(id, t)
+            insertTagToDb(tag)
+          }
+        }
+        case _ => {}
+
+      }
     }
 
   /** Insert a row to blog table. */
@@ -52,6 +63,13 @@ object OrgToHtmlToDb extends LogSupport {
     ctx.run(query[Blog].insert(lift(blog)))
     info("Inserted new blog post into database.")
   }
+
+  /** Insert a row to tag table. */
+  def insertTagToDb(tag: Tag): Unit = {
+    import ctx._
+    ctx.run(query[Tag].insert(lift(tag)))
+    info(s"Inserted tag '${tag.tag}' for blog '${tag.blog_id}' into database.")
+  }
 }
 
 class OrgToHtml(orgPath: String) extends LogSupport {
@@ -62,6 +80,7 @@ class OrgToHtml(orgPath: String) extends LogSupport {
   var author: Option[String] = None
   var contents: Option[String] = None
   var orgHash: Option[String] = None
+  var tags: Option[List[String]] = None
 
   // Full path to org file
   val fullOrgPath = os.Path(Config.config.blogRoot) / orgPath
@@ -144,6 +163,12 @@ class OrgToHtml(orgPath: String) extends LogSupport {
 
       // Will throw if Failure, which is desired behavior
       author = rawAuthor.get
+
+      val rawTags = getRawOrgField(orgLines, "#+TAGS", ": ").get
+      tags = rawTags match {
+        case Some(t) => Some(t.split(" ").toList)
+        case None    => None
+      }
     }
 
   /** Hash the .org file for later insertion into database. */
