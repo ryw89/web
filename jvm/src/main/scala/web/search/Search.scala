@@ -13,6 +13,7 @@ import wvlet.log.LogSupport
 
 import java.net.URLDecoder
 import java.nio.file.Paths
+import scala.collection.mutable.Map
 import scala.util.Try
 
 object Conf {
@@ -22,6 +23,111 @@ object Conf {
   val index = new NIOFSDirectory(Paths.get(searchIndexDir.toString))
   val config = new IndexWriterConfig()
   val writer = new IndexWriter(index, config)
+}
+
+/** Object with wrapper function around BlogSearchResults' methods. */
+object GetBlogSearchResults {
+  def get(blogIdsAndScores: Seq[(Int, Float)]) = {
+    val bsr = new BlogSearchResults(blogIdsAndScores)
+    bsr.getTitlesAndDates()
+    bsr.getTags()
+    bsr.makeBlogSearchResults()
+    bsr.res
+  }
+}
+
+/** Simple data class for encapsulating fields of a blog search result. */
+class BlogSearchResult(
+    val id: Int,
+    val title: String,
+    val date: String,
+    val score: Float,
+    val tags: Seq[String] = Seq()
+)
+
+/** Fetch needed blog post data from database to help in building
+  * search results page. */
+class BlogSearchResults(blogIdsAndScores: Seq[(Int, Float)]) {
+  import com.ryanwhittingham.web.db.Db._
+  import ctx._
+
+  var res: List[BlogSearchResult] = List()
+
+  private val ids: List[Int] = blogIdsAndScores.map(_._1).toList
+  private val scores: Map[Int, Float] = makeIdScoresMap()
+
+  private var blogIdsTitlesAndDates: List[(Int, String, String)] = List()
+  private var tags: Map[Int, Seq[String]] = Map()
+
+  def makeIdScoresMap() = {
+    var out: Map[Int, Float] = Map()
+    for ((id, score) <- blogIdsAndScores) {
+      out = out + (id -> score)
+    }
+    out
+  }
+
+  def getTitlesAndDates() = {
+    val res: List[(Int, String, Int)] =
+      ctx.run(
+        ctx
+          .query[Blog]
+          .filter(b => lift(ids).contains(b.id))
+          .sortBy(b => b.id)
+          .map(b => (b.id, b.title, b.tstamp))
+      )
+
+    if (res.length > 0) {
+      blogIdsTitlesAndDates = for {
+        (r: (Int, String, Int)) <- res
+      } yield {
+        val id = r._1
+        val title = r._2
+        val date = unixTimeToDate(r._3, "MMM d, y")
+        (id, title, date)
+      }
+    }
+  }
+
+  def getTags() = {
+    val res: List[(Int, String)] =
+      ctx.run(
+        ctx
+          .query[Tag]
+          .filter(t => lift(ids).contains(t.blog_id))
+          .map(t => (t.blog_id, t.tag))
+      )
+
+    // Iterate over unique blog IDs and build tags map
+    for (id: Int <- res.map(_._1).distinct) {
+      val tagsForThisId: List[String] = res.filter(_._1 == id).map(_._2)
+      if (tagsForThisId.length > 0) {
+        tags = tags + (id -> tagsForThisId)
+      }
+    }
+
+  }
+
+  def makeBlogSearchResults() = {
+    val unsortedRes = for {
+      (id, title, date) <- blogIdsTitlesAndDates
+    } yield {
+      // Fetch scores
+      val score = scores.get(id).get
+
+      // Fetch tags
+      val t = tags.get(id) match {
+        case Some(t) => t
+        case None    => Seq()
+      }
+
+      // Construct BlogSearchResult object & append to res public
+      // member
+      new BlogSearchResult(id, title, date, score, t)
+    }
+    res = unsortedRes.sortBy(_.score)
+  }
+
 }
 
 /** Methods for updating Lucene search index. */
@@ -63,8 +169,6 @@ class UpdateIndex(val blogIds: Option[Seq[Int]] = None) {
 
 /** Search Lucene index. */
 class Search(val query: String) extends LogSupport {
-  import com.ryanwhittingham.web.db.Db._
-  import ctx._
   info(s"Original search query: $query")
   private val cleanedQuery =
     URLDecoder.decode(query).replaceAll("[^a-zA-Z0-9]", "")
@@ -99,24 +203,25 @@ class Search(val query: String) extends LogSupport {
         doc.get("id").toInt
       }
     }.sortBy(hits.map(_.score)).distinct.toList
+
+    val blogIdsAndScores: List[(Int, Float)] = {
+      for {
+        (hit) <- hits
+      } yield {
+        val doc = searcher.doc(hit.doc)
+        (doc.get("id").toInt, hit.score)
+      }
+    }.distinct.toList
+
     info(s"Number of hits: ${blogIds.length}")
 
     if (blogIds.length == 0) {
       return None
     }
 
-    // Get blog titles & dates & build output HTML
-    val blogTitlesAndTimestamps: List[(String, Int)] =
-      ctx.run(
-        ctx
-          .query[Blog]
-          .filter(b => lift(blogIds).contains(b.id))
-          .map(b => (b.title, b.tstamp))
-      )
-
-    val blogTitles = blogTitlesAndTimestamps.unzip._1
-    val blogDates =
-      blogTitlesAndTimestamps.unzip._2.map(unixTimeToDate(_, "MMM d, y"))
+    val blogSearchResults = GetBlogSearchResults.get(blogIdsAndScores)
+    val blogTitles = blogSearchResults.map(_.title)
+    val blogDates = blogSearchResults.map(_.date)
 
     // Make HTML tags
     val out: scalatags.Text.TypedTag[String] =
