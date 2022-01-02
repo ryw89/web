@@ -137,7 +137,7 @@ object Sidebar {
         li(
           a( // Note that this class is used to correct the links by the
             // makeHrefRelativeToLocation JS function
-            href := s"/blog/by-month/${start.minusMonths(x).format(hrefFormat)}",
+            href := s"/blog-by-month/${start.minusMonths(x).format(hrefFormat)}",
             start.minusMonths(x).format(outFormat)
           )
         )

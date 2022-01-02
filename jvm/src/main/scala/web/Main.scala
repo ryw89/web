@@ -10,7 +10,7 @@ import common.UnixTimeToDate.unixTimeToDate
 import config.Config
 import orgtohtml.OrgToHtmlToDb
 import query.blog.QueryBlog.{mostRecentBlog, queryByTitle}
-import search.{Search, UpdateIndex}
+import search.{BlogsByDateRange, Search, UpdateIndex}
 import templates.{Blog, ErrTemplates, MainTemplate, SearchResults}
 
 object App extends cask.MainRoutes {
@@ -76,6 +76,14 @@ object App extends cask.MainRoutes {
       case None => cask.Response(ErrTemplates.notFound, 404)
     }
 
+  }
+
+  @cask.get("/blog-by-month/:month")
+  def postsByMonth(month: String) = {
+    BlogsByDateRange.get(month + "-01") match {
+      case Some(s) => cask.Response(s, 200)
+      case None    => cask.Response(SearchResults.noSearchResults, 200)
+    }
   }
 
   /** Example page for examining UI. */

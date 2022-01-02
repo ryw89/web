@@ -5,6 +5,7 @@ import wvlet.log.Logger
 
 import java.math.BigInteger
 import java.security.MessageDigest
+import java.time.Instant
 import scala.util.{Failure, Success, Try}
 
 /** Simple helper function for unwrapping a Try[Option[T]] to a T.
@@ -22,6 +23,17 @@ object Unwrap {
     }
 
     unwrappedOption
+  }
+}
+
+/** Convert YYYY-MM-DD date to Unix time in seconds. */
+object DateToUnixTime {
+  private val logger = Logger.of[App]
+  def get(d: String): Long = {
+    logger.info(s"Converting date ${d} to Unix time...")
+    val unixTime = Instant.parse(d + "T00:00:00.000Z").getEpochSecond()
+    logger.info(s"Converted to ${unixTime}.")
+    unixTime
   }
 }
 

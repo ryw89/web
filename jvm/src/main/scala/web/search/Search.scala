@@ -1,5 +1,6 @@
 package com.ryanwhittingham.web.search
 
+import com.ryanwhittingham.web.common.DateToUnixTime
 import com.ryanwhittingham.web.common.UnixTimeToDate.unixTimeToDate
 import com.ryanwhittingham.web.templates.SearchResults.searchResults
 import net.harawata.appdirs.AppDirsFactory
@@ -9,10 +10,13 @@ import org.apache.lucene.index.{DirectoryReader, IndexWriter, IndexWriterConfig}
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser
 import org.apache.lucene.search.IndexSearcher
 import org.apache.lucene.store.NIOFSDirectory
-import wvlet.log.LogSupport
+import wvlet.log.{LogSupport, Logger}
 
 import java.net.URLDecoder
 import java.nio.file.Paths
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.temporal.TemporalAdjusters
 import scala.collection.mutable.Map
 import scala.util.Try
 
@@ -23,6 +27,60 @@ object Conf {
   val index = new NIOFSDirectory(Paths.get(searchIndexDir.toString))
   val config = new IndexWriterConfig()
   val writer = new IndexWriter(index, config)
+}
+
+object BlogsByDateRange {
+  import com.ryanwhittingham.web.db.Db._
+  import ctx._
+  private val logger = Logger.of[App]
+  def get(
+      start: String,
+      end: Option[String] = None,
+      pattern: String = "yyyy-MM-dd"
+  ): Option[scalatags.Text.TypedTag[String]] = {
+    val startUnixTime: Long = DateToUnixTime.get(start)
+    val endUnixTime: Long = end match {
+      case Some(d) => DateToUnixTime.get(d)
+      case None => {
+        val lastDayOfMonth = LocalDate
+          .parse(start, DateTimeFormatter.ofPattern(pattern))
+          .`with`(TemporalAdjusters.lastDayOfMonth())
+        logger.info(s"Found last day of month of ${lastDayOfMonth}.")
+        // Note that yyyy-MM-dd is the default format when casting a
+        // LocalDate to a string via the to toString method.
+        // Additionally, there are 86400 seconds in a day. So, adding
+        // these 86,399 seconds will move this date from the last day
+        // of the month to midnight minus one second of the next day.
+        val unixTime = DateToUnixTime.get(lastDayOfMonth.toString) + 86399
+        logger.info(s"Last second of month is: ${unixTime}.")
+        unixTime
+      }
+    }
+
+    val blogIdsAndTimestamps: Seq[(Int, Int)] =
+      ctx.run(
+        query[Blog]
+          .filter(b =>
+            (b.tstamp >= lift(startUnixTime) && b.tstamp <= lift(endUnixTime))
+          )
+          .map(b => (b.id, b.tstamp))
+      )
+
+    if (blogIdsAndTimestamps.length == 0) {
+      return None
+    }
+
+    val blogIds: Seq[Int] = blogIdsAndTimestamps.map(_._1)
+    val blogTimestamps: Seq[Float] = blogIdsAndTimestamps.map(_._2)
+
+    val blogSearchResults = GetBlogSearchResults.get(blogIds zip blogTimestamps)
+
+    // Make HTML tags
+    val out: scalatags.Text.TypedTag[String] =
+      searchResults(blogSearchResults)
+    Some(out)
+
+  }
 }
 
 /** Object with wrapper function around BlogSearchResults' methods. */
