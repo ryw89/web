@@ -1,0 +1,10 @@
+* Deployment
+The ~Makefile~ allows for easy building and deployment of this project.
+
+To build and deploy locally and remotely, run: ~make app~.
+
+To build and deploy locally only, set the ~NO_REMOTE~ environment
+variable to any value. For example: ~NO_REMOTE=true make app~.
+
+(Note that both of these deployment are for the ~.jar~ file and ~.js~
+assets only and require a functional web server, e.g. Nginx.)
