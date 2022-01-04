@@ -41,4 +41,13 @@ object Main {
     dom.window.location.href = s"${origin}/search/${query}"
     return ()
   }
+
+  /** Remove leading whitespace in <code> HTML blocks. */
+  def rmPreCodeLeadingWhitespace() = {
+    val pre = dom.document.getElementsByTagName("code")
+    for (i <- 0 until pre.length) {
+      val text = pre(i).firstChild.nodeValue
+      pre(i).firstChild.nodeValue = text.stripLeading()
+    }
+  }
 }
