@@ -107,7 +107,7 @@ class OrgToHtml(orgPath: String) extends LogSupport {
       // Fetch output HTML file from stdout
       val htmlPath = stdout.split("Output HTML at: ")(1).trim.stripSuffix(".")
       info(s"HTML path at: ${htmlPath}.")
-      contents = Some(Source.fromFile(htmlPath).getLines.mkString)
+      contents = Some(Source.fromFile(htmlPath).getLines.mkString("\n"))
     }
 
   def getRawOrgField(
