@@ -1,0 +1,13 @@
+#+TITLE: Automatically closing LSP servers in Emacs
+#+DATE: [2022-01-03 Mon 20:22]
+#+OPTIONS: num:nil toc:nil
+#+OPTIONS: html-postamble:nil
+#+OPTIONS: title:nil
+#+TAGS: emacs lsp scala
+Some LSP servers -- for example, Scala's metals -- are a bit
+expensive. The following command will cause the LSP server to get shut
+down when all associated buffers are closed.
+
+#+BEGIN_SRC elisp
+(setq lsp-keep-workspace-alive nil)
+#+END_SRC
