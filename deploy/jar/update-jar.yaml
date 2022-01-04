@@ -24,11 +24,13 @@
 
   vars:
     remote_jar_dest: /usr/local/bin/ryw-web.jar
+    no_remote: "{{ lookup('env', 'NO_REMOTE') }}"
 
   become: yes
 
   tasks:
     - name: "Copy .jar to remote"
+      when: no_remote is undefined
       copy:
         src: "{{ hostvars['localhost']['latest_jar']['path'] }}"
         dest: "{{ remote_jar_dest }}"

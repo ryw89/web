@@ -34,11 +34,13 @@
     sbt_js_bundle_folder: js/target/scala-2.13/scalajs-bundler/main/
     scala_resources_folder: jvm/src/main/resources/
     nginx_srv_static_folder: /var/www/html/static/
+    no_remote: "{{ lookup('env', 'NO_REMOTE') }}"
 
   become: yes
 
   tasks:
     - name: "Copy JS to remote Nginx static assets folder"
+      when: no_remote is undefined
       copy:
         src: "{{ item }}"
         dest: "{{ nginx_srv_static_folder }}"
