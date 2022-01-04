@@ -1,0 +1,13 @@
+- hosts: ryw
+
+  vars:
+    no_remote: "{{ lookup('env', 'NO_REMOTE') }}"
+
+  become: yes
+
+  tasks:
+  - name: Restart systemd service
+    when: no_remote is undefined
+    systemd:
+      name: ryw-web.service
+      state: restarted
