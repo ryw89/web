@@ -1,0 +1,18 @@
+- hosts: ryw
+
+  become: yes
+
+  tasks:
+  - name: Copy systemd service
+    copy:
+      src: ryw-web.service
+      dest: /etc/systemd/system/
+      owner: root
+      group: root
+      mode: '0644'
+
+  - name: Enable service
+    systemd:
+      name: ryw-web.service
+      state: started
+      enabled: yes
