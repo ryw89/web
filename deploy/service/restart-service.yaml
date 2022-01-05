@@ -7,7 +7,7 @@
 
   tasks:
   - name: Restart systemd service
-    when: no_remote is undefined
+    when: no_remote | length == 0
     systemd:
       name: ryw-web.service
       state: restarted

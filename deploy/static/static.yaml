@@ -38,7 +38,7 @@
 
   tasks:
     - name: "Copy static resources to remote Nginx static assets folder"
-      when: no_remote is undefined
+      when: no_remote | length == 0
       copy:
         src: "{{ item }}"
         dest: "{{ nginx_srv_static_folder }}"
