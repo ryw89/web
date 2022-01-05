@@ -1,5 +1,6 @@
 package com.ryanwhittingham.web
 
+import org.querki.jquery._
 import org.scalajs.dom
 import org.scalajs.dom.html.TextArea
 
@@ -48,6 +49,15 @@ object Main {
     for (i <- 0 until pre.length) {
       val text = pre(i).firstChild.nodeValue
       pre(i).firstChild.nodeValue = text.stripLeading()
+    }
+  }
+
+  /** Map certain languages from their Emacs org-mode name to a
+    * highlight.js compatible name. */
+  def mapHighlightJsLangs() = {
+    val renames = Map("elisp" -> "lisp")
+    for ((oldLang, newLang) <- renames) {
+      $(s".lang-${oldLang}").attr("class", s"lang-${newLang}")
     }
   }
 }

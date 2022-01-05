@@ -89,7 +89,13 @@ lazy val ryw = crossProject(JSPlatform, JVMPlatform)
     )
   )
   .jsSettings(
-    libraryDependencies ++= Seq("org.scala-js" %%% "scalajs-dom" % "1.1.0"),
+    libraryDependencies ++= Seq(
+      "org.querki" %%% "jquery-facade" % "2.0",
+      "org.scala-js" %%% "scalajs-dom" % "1.1.0"
+    ),
+    npmDependencies in Compile ++= Seq(
+      "jquery" -> "3.6.0"
+    ),
     scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) },
     webpackBundlingMode := scalajsbundler.BundlingMode.LibraryAndApplication()
   )

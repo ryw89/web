@@ -22,7 +22,6 @@ object Head {
     script(
       src := "/static/highlight.min.js"
     ),
-    script("hljs.highlightAll();"),
     // Bootstrap CSS, including dark theme
     link(
       rel := "stylesheet",

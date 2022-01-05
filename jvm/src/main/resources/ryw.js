@@ -1,6 +1,12 @@
 // Remove leading newlines in <code> HTML blocks
 ryw.rmPreCodeLeadingWhitespace();
 
+// Rename langs for highlight.js
+ryw.mapHighlightJsLangs();
+
+// Activate highlight.js
+hljs.highlightAll();
+
 // Add search box handler
 let searchInputElem = document.getElementById("blog-search-button");
 searchInputElem.addEventListener("click", function () {
