@@ -20,7 +20,7 @@ object Head {
       href := "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/styles/default.min.css"
     ),
     script(
-      src := "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/highlight.min.js"
+      src := "/static/highlight.min.js"
     ),
     script("hljs.highlightAll();"),
     // Bootstrap CSS, including dark theme
