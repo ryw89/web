@@ -1,0 +1,47 @@
+- hosts: localhost
+
+  vars:
+    project_root: ../../
+    static_assets_folder: static/
+    extern_js_folder: static/assets/extern/js/
+    scala_resources_folder: jvm/src/main/resources/
+    nginx_srv_static_folder: /srv/ryw-web/static/
+    static_assets:
+      - "{{ project_root }}/{{ extern_js_folder }}/highlight.min.js"
+
+  tasks:
+    - name: "Copy static resources to Scala resources folder"
+      copy:
+        src: "{{ item }}"
+        dest: "{{ project_root }}/{{ scala_resources_folder}}"
+      with_items: "{{ q('list', static_assets) }}"
+    - name: "Copy static resources to local Nginx static assets folder"
+      become: yes
+      copy:
+        src: "{{ item }}"
+        dest: "{{ nginx_srv_static_folder }}"
+        owner: nginx
+        group: nginx
+      with_items: "{{ q('list', static_assets) }}"
+
+- hosts: ryw
+
+  vars:
+    project_root: ../../
+    extern_js_folder: static/assets/extern/js/
+    nginx_srv_static_folder: /var/www/html/static/
+    static_assets:
+      - "{{ project_root }}/{{ extern_js_folder }}/highlight.min.js"
+    no_remote: "{{ lookup('env', 'NO_REMOTE') }}"
+
+  become: yes
+
+  tasks:
+    - name: "Copy static resources to remote Nginx static assets folder"
+      when: no_remote is undefined
+      copy:
+        src: "{{ item }}"
+        dest: "{{ nginx_srv_static_folder }}"
+        owner: www-data
+        group: www-data
+      with_items: "{{ q('list', static_assets) }}"
