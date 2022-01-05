@@ -4,10 +4,10 @@ CREATE TABLE IF NOT EXISTS blog (
     title           varchar(128),
     author          varchar(64),
     contents        varchar,
-	org_hash        varchar(32)
+    org_hash        varchar(32)
 );
 
 CREATE TABLE IF NOT EXISTS tag (
-	blog_id         int,
+    blog_id         int,
     tag             varchar
 );
