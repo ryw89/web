@@ -8,6 +8,7 @@
     nginx_srv_static_folder: /srv/ryw-web/static/
     static_assets:
       - "{{ project_root }}/{{ extern_js_folder }}/highlight.min.js"
+      - "{{ project_root }}/{{ scala_resources_folder }}/ryw.css"
 
   tasks:
     - name: "Copy static resources to Scala resources folder"
@@ -29,9 +30,11 @@
   vars:
     project_root: ../../
     extern_js_folder: static/assets/extern/js/
+    scala_resources_folder: jvm/src/main/resources/
     nginx_srv_static_folder: /var/www/html/static/
     static_assets:
       - "{{ project_root }}/{{ extern_js_folder }}/highlight.min.js"
+      - "{{ project_root }}/{{ scala_resources_folder }}/ryw.css"
     no_remote: "{{ lookup('env', 'NO_REMOTE') }}"
 
   become: yes
