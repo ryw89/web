@@ -19,3 +19,8 @@ $("#blog-search-input").keyup(function (event) {
     $("#blog-search-button").click();
   }
 });
+
+// Unhide HTML -- used in conjunction with ryw.css
+$(document).ready(function () {
+  document.getElementsByTagName("html")[0].style.visibility = "visible";
+});
