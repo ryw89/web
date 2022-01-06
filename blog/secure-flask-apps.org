@@ -1,0 +1,147 @@
+#+TITLE: Adding user authentication to Flask apps using mod_auth_openidc & Apache
+#+DATE: [2022-01-06 Thu 11:57]
+#+OPTIONS: num:nil toc:nil
+#+OPTIONS: html-postamble:nil
+#+OPTIONS: title:nil
+#+TAGS: apache auth0 flask python
+At my company, we're using Auth0 to secure our internal apps for our
+team. There's a lot of ways to do this -- we've also used a pure-Flask
+setup similar to what Auth0 describes [[https://auth0.com/docs/quickstart/backend/python/01-authorization][here]].
+
+When I was working on one of our web apps, I wanted to try a different
+way of securing it. I had already known there was an Apache module
+that worked with Auth0 (or really any [[https://www.digitalocean.com/community/tutorials/an-introduction-to-oauth-2][OAuth2]] provider), but in the
+past being more familiar with Nginx I had wanted to avoid wading into
+Apache configuration. As it turns out, my past trepidation may have
+been unwarranted, as the setup is actually fairly simple.
+
+* Setting up the server
+For this setup, I'm using Ubuntu 18.04. But most of this would be
+similar on any Linux distro. The main difference lies in the Apache
+configuration. Ubuntu likes to keep that at
+~/etc/apache2/apache2.conf~ and has its own default config that's
+quite a bit different from 'vanilla' Apache while Arch Linux (for
+example) stores the config ~/etc/httpd/conf/httpd.conf~. So, things
+can vary a bit from distro to distro.
+
+Install Apache in the normal way:
+
+#+BEGIN_SRC bash
+sudo apt update
+sudo apt install apache2
+#+END_SRC
+
+And next, install ~mod_auth_openidc~. Binaries for different Linux
+flavors are available on the [[https://github.com/zmartzone/mod_auth_openidc][project GitHub page]]. With Ansible, this
+could be done like:
+
+#+BEGIN_SRC yaml
+- name: Install mod_auth_openidc
+  become: yes
+  apt:
+    deb: https://github.com/zmartzone/mod_auth_openidc/releases/your-distro-specific-package
+#+END_SRC
+
+Ubuntu's default Apache config contains the following line:
+~IncludeOptional conf-enabled/*.conf~. So, I figured I'd just throw my
+site-specific config in the ~/etc/apache2/conf-enabled~ directory.
+(Perhaps this isn't the standard way of doing this, but it seems to
+work just fine). Consulting [[https://auth0.com/docs/quickstart/webapp/apache/01-login][this guide]] from Auth0, I was able to put
+together an Apache config:
+
+#+BEGIN_SRC apache
+LoadModule auth_openidc_module modules/mod_auth_openidc.so
+LoadModule proxy_module modules/mod_proxy.so
+LoadModule proxy_http_module modules/mod_proxy_http.so
+
+OIDCProviderMetadataURL https://example.auth0.com/.well-known/openid-configuration
+OIDCClientID client_id
+OIDCClientSecret client_secret
+OIDCScope "openid email"
+OIDCRedirectURI https://your-domain/callback
+OIDCCryptoPassphrase some_long_random_string
+
+<Location "/">
+    AuthType openid-connect
+    Require valid-user
+
+    ProxyPreserveHost On
+
+    ProxyPass http://0.0.0.0:8000/
+    ProxyPassReverse http://0.0.0.0:8000/
+</Location>
+#+END_SRC
+
+(Note I had also made a symlink ~/etc/apache/modules~ to
+~/usr/lib/apache2/modules~ so my ~LoadModule~ lines will work with
+that ~modules/~ path. Not necessary, adjust the path as necessary.)
+
+Ok, so let's go through this bit by bit. The ~LoadModule~ directives
+load ~mod_auth_openidc~ as well as some normal Apache modules for
+using Apache as a reverse proxy. (We'll be proxying to a Flask app via
+Gunicorn, as we'll soon see.)
+
+The ~OIDC~ lines contain the Auth0-related configuration. The client
+ID and client secret come from Auth0 and are available in an Auth0
+application's settings page. The ~OIDCProviderMetadataURL~ should
+correspond to the Auth0 domain configured for that app.
+
+For ~OIDCScope~, ~openid~ is always required. ~email~ will let us
+access our user's email address from inside our Flask app, which could
+certainly come in handy.
+
+Finally, ~OIDCCryptoPassphrase~ should just be a long, random string
+that you create. For example:
+
+#+BEGIN_SRC bash
+cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n1
+#+END_SRC
+
+In our ~Location~ block, we set up our reverse proxy to port 8000 on
+localhost -- 8000 is just the default port for Gunicorn. The ~AuthType
+openid-connect~ and ~Require valid-user~ directives are what enforce
+Auth0 for this location. So, whenever a user goes to our website,
+they'll first have to log in via Auth0 to continue.
+
+That's it for the Apache bit. I won't go to into setting up Gunicorn
+and Flask in this post, as there are plenty of such resources on that
+online. such an app. But here's some tidbits:
+
+First of all, you can access your user's email address from inside
+Flask using the following:
+
+#+BEGIN_SRC python
+request.environ['HTTP_OIDC_CLAIM_EMAIL']
+#+END_SRC
+
+Secondly, you'll want to do something to handle users being sent to
+your ~OIDCRedirectURI~ after successful log in. Normally, that route
+should just redirect users to your 'real' content. A minimal example
+could be something like:
+
+#+BEGIN_SRC python
+from flask import Flask, redirect, url_for
+
+app = Flask(__name__)
+
+@app.route('/<path:path>')
+def main(path='index.html'):
+    return "Success!"
+
+
+@app.route('/callback')
+def callback_handling():
+    """Redirect to index.html after successful authorization."""
+    return redirect(url_for(main, path='index.html'))
+
+
+if __name__ == '__main__':
+    app.run()
+#+END_SRC
+
+And finally, another tidbit. The Apache web server on this server is
+itself reverse-proxied to from our main reverse-proxy Nginx server.
+It's important to follow ~mod_auth_openid~'s [[https://github.com/zmartzone/mod_auth_openidc/wiki#8-how-do-i-run-mod_auth_openidc-behind-a-reverse-proxy][instructions]] for using
+this Apache module behind a reverse proxy. In the case of Nginx, you'd
+want to add a ~proxy_set_header X-Forwarded-Proto $scheme;~ line to
+your relevant location block.
