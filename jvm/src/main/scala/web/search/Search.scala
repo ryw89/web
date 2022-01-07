@@ -2,6 +2,7 @@ package com.ryanwhittingham.web.search
 
 import com.ryanwhittingham.web.common.DateToUnixTime
 import com.ryanwhittingham.web.common.UnixTimeToDate.unixTimeToDate
+import com.ryanwhittingham.web.query.blog.QueryBlog
 import com.ryanwhittingham.web.templates.SearchResults.searchResults
 import net.harawata.appdirs.AppDirsFactory
 import org.apache.lucene.analysis.standard.StandardAnalyzer
@@ -186,6 +187,34 @@ class BlogSearchResults(blogIdsAndScores: Seq[(Int, Float)]) {
     res = unsortedRes.sortBy(_.score)
   }
 
+}
+
+/** Fetch previous or next blog post, based on a blog post's title. */
+object PreviousOrNextBlogPostTitle {
+  import com.ryanwhittingham.web.db.Db._
+  import ctx._
+  def get(title: String, next: Boolean = true): Option[String] = {
+    val blogId = QueryBlog.queryByTitle(title).get._1.id
+
+    // No previous post if id is 1, so return a None
+    if (next == false && blogId == 1) {
+      return None
+    }
+
+    // Query for title by ID
+    val targetId = if (next) blogId + 1 else blogId - 1
+    val blogTitle =
+      ctx.run(query[Blog].filter(_.id == lift(targetId)).map(b => b.title))
+
+    // This could happen if we're looking for next post after the most
+    // recent post
+    if (blogTitle.length == 0) {
+      return None
+    }
+
+    return Some(blogTitle(0))
+
+  }
 }
 
 /** Methods for updating Lucene search index. */
