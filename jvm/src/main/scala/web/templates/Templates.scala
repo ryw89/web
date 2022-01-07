@@ -262,9 +262,7 @@ object SearchResults {
       } yield {
         li(
           h2(`class` := "display-inline", a(href := link, title)),
-          Tags.time(`class` := "pb-2", date),
-          " | ",
-          tags
+          div(`class` := "pb-3", Tags.time(date), " | ", tags)
         )
       }
 
