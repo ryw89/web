@@ -115,7 +115,7 @@ object App extends cask.MainRoutes {
 
   @cask.get("/notfound")
   def notFound() = {
-    cask.Response(ErrTemplates.notFound, 404)
+    cask.Response(ErrTemplates.notFound, 200)
   }
 
   @cask.get("/error")
