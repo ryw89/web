@@ -1,0 +1,53 @@
+- hosts: ryw
+  name: Install various packages
+  user: ryanw
+  gather_facts: true
+
+  tasks:
+    - name: Update all packages to the latest version
+      become: yes
+      apt:
+        update_cache: yes
+        upgrade: dist
+
+    - name: Install various packages
+      become: yes
+      apt:
+        pkg:
+          - default-jdk
+          - nginx
+
+    # Docker
+    - name: Install Docker prereqs
+      become: yes
+      apt:
+        pkg:
+        - apt-transport-https
+        - ca-certificates
+        - curl
+        - software-properties-common
+
+    - name: Add Docker apt key
+      become: yes
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker apt repo
+      become: yes
+      apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
+        state: present
+
+    - name: Install Docker
+      become: yes
+      apt:
+        name: docker-ce
+        state: present
+
+    - name: adding existing user ubuntu to group docker
+      become: yes
+      user:
+        name: ubuntu
+        groups: docker
+        append: yes

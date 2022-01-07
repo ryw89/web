@@ -1,0 +1,20 @@
+- hosts: ryw
+  name: Copy nginx config
+  user: ryanw
+  gather_facts: true
+
+  tasks:
+  - name: Copy Nginx config
+    become: yes
+    copy:
+      src: nginx.conf
+      dest: /etc/nginx/nginx.conf
+      owner: root
+      group: root
+      mode: '0644'
+
+  - name: Reload Nginx to use new config
+    become: yes
+    systemd:
+      name: nginx
+      state: restarted
