@@ -194,7 +194,16 @@ object PreviousOrNextBlogPostTitle {
   import com.ryanwhittingham.web.db.Db._
   import ctx._
   def get(title: String, next: Boolean = true): Option[String] = {
-    val blogId = QueryBlog.queryByTitle(title).get._1.id
+    // -1 is just an invalid value that no blog post has
+    var blogId = -1
+
+    try {
+      blogId = QueryBlog.queryByTitle(title).get._1.id
+    } catch {
+      // .get will throw an exception if we didn't have a matching
+      // title, so return None
+      case _: Throwable => return None
+    }
 
     // No previous post if id is 1, so return a None
     if (next == false && blogId == 1) {

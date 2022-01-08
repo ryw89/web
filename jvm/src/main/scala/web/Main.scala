@@ -10,7 +10,12 @@ import common.UnixTimeToDate.unixTimeToDate
 import config.Config
 import orgtohtml.OrgToHtmlToDb
 import query.blog.QueryBlog.{mostRecentBlog, queryByTitle}
-import search.{BlogsByDateRange, Search, UpdateIndex}
+import search.{
+  BlogsByDateRange,
+  PreviousOrNextBlogPostTitle,
+  Search,
+  UpdateIndex
+}
 import templates.{Blog, ErrTemplates, MainTemplate, SearchResults}
 
 object App extends cask.MainRoutes {
@@ -51,6 +56,28 @@ object App extends cask.MainRoutes {
         cask.Response("An application error occurred.\n", 500)
       }
     }
+  }
+
+  @cask.get("/api-public/prev-title/:postTitle")
+  def getPreviousTitle(postTitle: String) = {
+    val title: Option[String] =
+      PreviousOrNextBlogPostTitle.get(postTitle, next = false)
+    title match {
+      case Some(t) => ujson.Obj("title" -> t)
+      case None    => ujson.Obj("title" -> ujson.Null)
+    }
+
+  }
+
+  @cask.get("/api-public/next-title/:postTitle")
+  def getNextTitle(postTitle: String) = {
+    val title: Option[String] =
+      PreviousOrNextBlogPostTitle.get(postTitle, next = true)
+    title match {
+      case Some(t) => ujson.Obj("title" -> t)
+      case None    => ujson.Obj("title" -> ujson.Null)
+    }
+
   }
 
   @cask.get("/blog")
