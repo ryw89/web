@@ -1,6 +1,6 @@
 package com.ryanwhittingham.web.search
 
-import com.ryanwhittingham.web.common.DateToUnixTime
+import com.ryanwhittingham.web.common.{DateToUnixTime, HtmlToPlainTextLogWrap}
 import com.ryanwhittingham.web.common.UnixTimeToDate.unixTimeToDate
 import com.ryanwhittingham.web.query.blog.QueryBlog
 import com.ryanwhittingham.web.templates.SearchResults.searchResults
@@ -249,7 +249,13 @@ class UpdateIndex(val blogIds: Option[Seq[Int]] = None) {
         // Make a new Lucene document & fill in
         val doc = new Document()
         doc.add(new StoredField("id", b.id))
-        doc.add(new TextField("contents", b.contents, Field.Store.NO))
+        doc.add(
+          new TextField(
+            "contents",
+            HtmlToPlainTextLogWrap.get(b.contents),
+            Field.Store.NO
+          )
+        )
 
         if (tags.length > 0) {
           val allTags = tags.map(_.tag).mkString(" ")
