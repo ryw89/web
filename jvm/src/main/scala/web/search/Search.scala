@@ -290,16 +290,7 @@ class Search(val query: String) extends LogSupport {
     val docs = searcher.search(queryParser, 10)
     val hits = docs.scoreDocs
 
-    // Get unique blog post IDs (IDs in SQL database, that is)
-    val blogIds: List[Int] = {
-      for {
-        (hit) <- hits
-      } yield {
-        val doc = searcher.doc(hit.doc)
-        doc.get("id").toInt
-      }
-    }.sortBy(hits.map(_.score)).distinct.toList
-
+    // Fetch blog IDs and Lucene scores
     val blogIdsAndScores: List[(Int, Float)] = {
       for {
         (hit) <- hits
@@ -309,9 +300,9 @@ class Search(val query: String) extends LogSupport {
       }
     }.distinct.toList
 
-    info(s"Number of hits: ${blogIds.length}")
+    info(s"Number of hits: ${blogIdsAndScores.length}")
 
-    if (blogIds.length == 0) {
+    if (blogIdsAndScores.length == 0) {
       return None
     }
 
