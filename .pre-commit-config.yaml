@@ -9,6 +9,7 @@ repos:
     rev: v1.17.1
     hooks:
     -   id: codespell
+        exclude: min.js$
 -   repo: https://github.com/Lucas-C/pre-commit-hooks-java
     rev: 1.3.10
     hooks:
