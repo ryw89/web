@@ -24,3 +24,6 @@ blog/*.html
 # Built and external resources
 jvm/src/main/resources/*bundle.js
 jvm/src/main/resources/highlight.min.js
+
+# Others
+.cache
