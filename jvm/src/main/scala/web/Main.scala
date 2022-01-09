@@ -113,6 +113,12 @@ object App extends cask.MainRoutes {
     }
   }
 
+  /** Redirect to CV asset. */
+  @cask.get("/cv")
+  def redirectToCvAsset() = {
+    cask.Redirect("/ryan_cv.pdf")
+  }
+
   /** Example page for examining UI. */
   @cask.get("/example")
   def example() = {
