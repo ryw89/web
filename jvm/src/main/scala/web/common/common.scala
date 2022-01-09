@@ -55,3 +55,13 @@ object Hash {
     hashedString
   }
 }
+
+/** Simple wrapper around HtmlToPlainText with logging of output. */
+object HtmlToPlainTextLogWrap {
+  private val logger = Logger.of[App]
+  def get(html: String): String = {
+    val out = HtmlToPlainText.get(html)
+    logger.debug(s"Converted HTML to: ${out}.")
+    out
+  }
+}

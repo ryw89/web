@@ -84,6 +84,7 @@ lazy val ryw = crossProject(JSPlatform, JVMPlatform)
       "net.harawata" % "appdirs" % "1.2.1",
       "org.apache.lucene" % "lucene-core" % "9.0.0",
       "org.apache.lucene" % "lucene-queryparser" % "9.0.0",
+      "org.jsoup" % "jsoup" % "1.14.3",
       "org.postgresql" % "postgresql" % "42.2.8",
       "org.wvlet.airframe" %% "airframe-log" % "21.12.1"
     )
