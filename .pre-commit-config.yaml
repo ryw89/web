@@ -17,6 +17,10 @@ repos:
   rev: 1163a9a9c869a63e74d05937ca61c6e1bb364b87
   hooks:
     - id: scalafmt
+- repo: https://github.com/maltzj/google-style-precommit-hook
+  rev: b7e9e7fcba4a5aea463e72fe9964c14877bd8130
+  hooks:
+    - id: google-style-java
 -   repo: local
     hooks:
     -   id: scalastyle
