@@ -30,4 +30,4 @@ repos:
         entry: nginxbeautifier -s 4
         pass_filenames: true
         language: node
-        files: .*nginx.*
+        files: nginx*.conf
