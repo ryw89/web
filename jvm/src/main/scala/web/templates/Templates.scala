@@ -174,7 +174,11 @@ object Sidebar {
 object Badge {
   def makeBadges(tags: Seq[String]) = {
     val badgeClass = "badge badge-light mx-1"
-    tags.map(span(`class` := badgeClass, _))
+    for {
+      (tag) <- tags
+    } yield {
+      a(href := s"/search/${tag}", `class` := badgeClass, tag)
+    }
   }
 }
 
