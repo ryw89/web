@@ -139,8 +139,7 @@ object Sidebar {
     (0 to n)
       .map(x =>
         li(
-          a( // Note that this class is used to correct the links by the
-            // makeHrefRelativeToLocation JS function
+          a(
             href := s"/blog-by-month/${start.minusMonths(x).format(hrefFormat)}",
             start.minusMonths(x).format(outFormat)
           )
