@@ -7,6 +7,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 class HtmlToPlainText {
+  /** Extract all plain text from the parapgraph elements present in HTML. */
   static String get(String html) {
     Document doc = Jsoup.parse(html);
     Elements paragraphs = doc.select("p");
