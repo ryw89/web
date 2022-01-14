@@ -8,9 +8,10 @@ import java.security.MessageDigest
 import java.time.Instant
 import scala.util.{Failure, Success, Try}
 
-/** Simple helper function for unwrapping a Try[Option[T]] to a T.
-  * Will raise an exception if not possible. */
 object Unwrap {
+
+  /** Simple helper function for unwrapping a Try[Option[T]] to a T.
+    * Will raise an exception if not possible. */
   def unwrapTryOptionOrFail[T](x: Try[Option[T]]): T = {
     val unwrappedTry = x match {
       case Success(s) => s
