@@ -27,3 +27,4 @@ jvm/src/main/resources/highlight.min.js
 
 # Others
 .cache
+.vscode
