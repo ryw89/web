@@ -1,0 +1,37 @@
+#+TITLE: Sending parameters to R Markdown from the command line
+#+DATE: [2022-02-01 Tue 11:14]
+#+OPTIONS: num:nil toc:nil
+#+OPTIONS: html-postamble:nil
+#+OPTIONS: title:nil
+#+TAGS: r rmd
+Quick little tidbit about passing parameters to R Markdown files.
+
+Using something like RStudio is great for dealing with R Markdown, but
+sometimes you'd like to generate your output straight from the
+command line. It's pretty simple to do that, for example:
+
+#+BEGIN_SRC bash
+Rscript -e 'library(rmarkdown); rmarkdown::render("your-file.Rmd", "html_document")
+#+END_SRC
+
+Of course, ~html_document~ can be replaced with whatever output format
+you desire.
+
+Passing in parameters would look something like this:
+
+#+BEGIN_SRC bash
+Rscript -e 'library(rmarkdown); rmarkdown::render("weights.Rmd", "html_document", params=list(some_param = "whatever", another_param = "something_else"))'
+#+END_SRC
+
+And then just make sure to have an appropriate ~params~ block in your
+Rmd file. (This can go under the ~output~ block.)
+
+#+BEGIN_SRC yaml
+params:
+  some_param: ""
+  another_param: ""
+#+END_SRC
+
+(Note in this example we're using empty strings as default values.)
+
+And that's pretty much it!
