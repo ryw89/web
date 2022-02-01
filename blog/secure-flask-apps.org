@@ -105,7 +105,7 @@ they'll first have to log in via Auth0 to continue.
 
 That's it for the Apache bit. I won't go to into setting up Gunicorn
 and Flask in this post, as there are plenty of such resources on that
-online. such an app. But here's some tidbits:
+online. But here's some tidbits:
 
 First of all, you can access your user's email address from inside
 Flask using the following:
