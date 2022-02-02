@@ -18,6 +18,21 @@ repos:
   rev: b7e9e7fcba4a5aea463e72fe9964c14877bd8130
   hooks:
     - id: google-style-java
+-   repo: https://github.com/saily/pre-commit-yapf-isort
+    rev: 598ff67cc598dddee43bc611d0bf4a07f4b08619
+    hooks:
+    -   id: yapf-isort
+        exclude: __init__.py
+-   repo: https://gitlab.com/pycqa/flake8
+    rev: 3.8.4
+    hooks:
+    -   id: flake8
+        additional_dependencies: [flake8-eradicate, pep8-naming]
+-   repo: https://github.com/pycqa/pydocstyle
+    rev: 5.1.1
+    hooks:
+    -   id: pydocstyle
+        exclude: setup.py
 -   repo: local
     hooks:
     -   id: scalastyle
