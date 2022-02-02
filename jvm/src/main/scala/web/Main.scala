@@ -36,8 +36,15 @@ object App extends cask.MainRoutes {
   @cask.get("/api/org2html/:orgPath")
   def orgToHtml(orgPath: String) = {
     OrgToHtmlToDb.orgToHtmlToDb(orgPath) match {
-      case Success(_) =>
-        cask.Response("Successfully added .org file to database.\n", 200)
+      case Success(id) => {
+        val respJson = ujson
+          .Obj(
+            "blogId" -> id,
+            "msg" -> "Successfully added .org file to database."
+          )
+          .toString
+        cask.Response(respJson, 200)
+      }
       case Failure(f) => {
         logger.error(f)
         cask.Response("An application error occurred.\n", 500)

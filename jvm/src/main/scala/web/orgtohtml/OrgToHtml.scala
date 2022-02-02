@@ -14,7 +14,7 @@ object OrgToHtmlToDb extends LogSupport {
 
   /** Inserts blog post data to database, given a .org file path.
     * Largely a wrapper around OrgToHtml classes and its methods. */
-  def orgToHtmlToDb(orgPath: String): Try[Unit] =
+  def orgToHtmlToDb(orgPath: String): Try[Int] =
     Try {
       val o = new OrgToHtml(orgPath)
       o.orgToHtml() match {
@@ -46,8 +46,11 @@ object OrgToHtmlToDb extends LogSupport {
           }
         }
         case _ => {}
-
       }
+      // Return ID of new blog post to caller. This can be used for
+      // constructing JSON with this ID that can served by the web
+      // server.
+      blog.id
     }
 
   /** Insert a row to blog table. */
