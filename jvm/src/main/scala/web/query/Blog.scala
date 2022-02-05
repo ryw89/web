@@ -39,8 +39,16 @@ object QueryBlog {
     val blog = ctx.run(query[Blog].filter(_.id == lift(matchedId)))(0)
     logger.info(s"Found matched blog post with id ${blog.id}.")
 
+    // While the database should not contain duplicate tags for one
+    // blog post, it's not impossible, hence the distinct here. We'll
+    // also return in alphabetical order using sorted() for
+    // consistency.
     val tag: Seq[String] =
-      ctx.run(query[Tag].filter(_.blog_id == lift(blog.id))).map(_.tag)
+      ctx
+        .run(query[Tag].filter(_.blog_id == lift(blog.id)))
+        .map(_.tag)
+        .distinct
+        .sorted
 
     Some(blog, tag)
   }
